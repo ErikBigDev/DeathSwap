@@ -7,6 +7,7 @@ import java.util.TimerTask;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,6 +23,9 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 	
 	Player p1;
 	Player p2;
+	
+	Location loc1 = new Location(Bukkit.getWorld("world"), 20000, 170, 20000);
+	Location loc2 = new Location(Bukkit.getWorld("world"), -20000, 170, -20000);
 	
 	boolean started = false;
 
@@ -44,6 +48,9 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 			}
 			started = false;
 			timer.cancel();
+			
+			loc1.add(10000, 0, 10000);
+			loc1.subtract(10000, 0, 10000);
 		}
 	}
 	
@@ -97,6 +104,25 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 			//ate.setTime(date.getTime()+(1000*60*4+1000*30)+(new Random().nextInt(40)+1)*1000);
 			date.setTime(date.getTime()+(1000*60*4+50*1000));
 			timer.schedule(task, date);
+			
+			p1.setHealth(0.0d);
+			p2.setHealth(0.0d);
+			
+			p1.teleport(loc1);
+			p2.teleport(loc2);
+			
+			p1.setInvulnerable(true);
+			p2.setInvulnerable(true);
+			
+			try {
+				Thread.currentThread().sleep(6000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			p1.setInvulnerable(false);
+			p2.setInvulnerable(false);
+			
 			started = true;
 			
 			return true;
