@@ -1,11 +1,13 @@
 package io.github.erikbigdev.deathswap;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -18,6 +20,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public final class DeathSwap extends JavaPlugin implements Listener{
 	
@@ -37,14 +41,17 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 			p2 = event.getPlayer();
 	}
 
+	
 	@EventHandler
 	public void onDeath(PlayerDeathEvent event) {
 		if(started) {
-			for(Player p : Bukkit.getOnlinePlayers()) {
-				if(p1 != event.getEntity())
-					p.sendTitle("§6§l"+p1.getPlayerListName()+" WON!", "§bGG", 10, 90, 20);
-				else
-					p.sendTitle("§6§l"+p2.getPlayerListName()+" WON!", "§bGG", 10, 90, 20);
+			if(p1 != event.getEntity()) {
+				p1.sendTitle("Â§6Â§l"+p1.getPlayerListName()+" WON!", "Â§bGG", 10, 90, 20);
+				p2.sendTitle("Â§6Â§l"+p1.getPlayerListName()+" WON!", "Â§bGG", 10, 90, 20);
+			}
+			else {
+				p1.sendTitle("Â§6Â§l"+p2.getPlayerListName()+" WON!", "Â§bGG", 10, 90, 20);
+				p2.sendTitle("Â§6Â§l"+p2.getPlayerListName()+" WON!", "Â§bGG", 10, 90, 20);
 			}
 			started = false;
 			timer.cancel();
@@ -56,37 +63,41 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 	
 	Timer timer = new Timer();
 	TimerTask task = new TimerTask() {
+		@SuppressWarnings("deprecation")
 		@Override
 		public void run() {
 			try {
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 10");
+				Bukkit.getServer().broadcastMessage("Â§4Â§lSWAPPING IN 10");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 9");
+				Bukkit.getServer().broadcastMessage("Â§4Â§lSWAPPING IN 9");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 8");
+				Bukkit.getServer().broadcastMessage("Â§4Â§lSWAPPING IN 8");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 7");
+				Bukkit.getServer().broadcastMessage("Â§4Â§lSWAPPING IN 7");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 6");
+				Bukkit.getServer().broadcastMessage("Â§4Â§lSWAPPING IN 6");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 5");
+				Bukkit.getServer().broadcastMessage("Â§4Â§lSWAPPING IN 5");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 4");
+				Bukkit.getServer().broadcastMessage("Â§4Â§lSWAPPING IN 4");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 3");
+				Bukkit.getServer().broadcastMessage("Â§4Â§lSWAPPING IN 3");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 2");
+				Bukkit.getServer().broadcastMessage("Â§4Â§lSWAPPING IN 2");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 1");
+				Bukkit.getServer().broadcastMessage("Â§4Â§lSWAPPING IN 1");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§oSWAP!");
+				Bukkit.getServer().broadcastMessage("Â§4Â§oSWAP!");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			Location loc = p1.getLocation();
-			
-			p1.teleport(p2);
-			p2.teleport(loc);
+			loc1 = p1.getLocation();
+			loc2 = p2.getLocation();
+			////////////////////////////////////////////////////////////////////////////////////////
+			//TODO: saveData() and loadData()
+			////////////////////////////////////////////////////////////////////////////////////////
+			p1.teleport(loc2);
+			p2.teleport(loc1);
 			
 			Date date = new Date();
 			//date.setTime(date.getTime()+(1000*60*4+1000*30)+(new Random().nextInt(40)+1)*1000);
@@ -97,6 +108,7 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 		}
 	};
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(command.getName().equalsIgnoreCase("start") && !started) {
@@ -105,17 +117,19 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 			date.setTime(date.getTime()+(1000*60*4+50*1000));
 			timer.schedule(task, date);
 			
+			Bukkit.getWorld("world").setGameRuleValue("doImmediateRespawn", "true");
+			
 			p1.setHealth(0.0d);
 			p2.setHealth(0.0d);
-			
-			p1.teleport(loc1);
-			p2.teleport(loc2);
 			
 			p1.setInvulnerable(true);
 			p2.setInvulnerable(true);
 			
+			p1.teleport(loc1);
+			p2.teleport(loc2);
+			
 			try {
-				Thread.currentThread().sleep(6000);
+				Thread.currentThread().sleep(5000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
