@@ -7,6 +7,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -27,8 +28,8 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 	Player p1;
 	Player p2;
 	
-	Location loc1 = new Location(Bukkit.getWorld("world"), 20000, 170, 20000, p1.getLocation().getYaw() ,p1.getLocation().getPitch());
-	Location loc2 = new Location(Bukkit.getWorld("world"), -20000, 170, -20000, p2.getLocation().getYaw() ,p2.getLocation().getPitch());
+	Location loc1 = new Location(Bukkit.getWorld("world"), 20000, 170, 20000);
+	Location loc2 = new Location(Bukkit.getWorld("world"), -20000, 170, -20000);
 	
 	boolean started = false;
 
@@ -40,14 +41,17 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 			p2 = event.getPlayer();
 	}
 
+	
 	@EventHandler
 	public void onDeath(PlayerDeathEvent event) {
 		if(started) {
-			for(Player p : Bukkit.getOnlinePlayers()) {
-				if(p1 != event.getEntity())
-					p.sendTitle("§6§l"+p1.getPlayerListName()+" WON!", "§bGG", 10, 90, 20);
-				else
-					p.sendTitle("§6§l"+p2.getPlayerListName()+" WON!", "§bGG", 10, 90, 20);
+			if(p1 != event.getEntity()) {
+				p1.sendTitle("§6§l"+p1.getPlayerListName()+" WON!", "§bGG", 10, 90, 20);
+				p2.sendTitle("§6§l"+p1.getPlayerListName()+" WON!", "§bGG", 10, 90, 20);
+			}
+			else {
+				p1.sendTitle("§6§l"+p2.getPlayerListName()+" WON!", "§bGG", 10, 90, 20);
+				p2.sendTitle("§6§l"+p2.getPlayerListName()+" WON!", "§bGG", 10, 90, 20);
 			}
 			started = false;
 			timer.cancel();
@@ -59,6 +63,7 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 	
 	Timer timer = new Timer();
 	TimerTask task = new TimerTask() {
+		@SuppressWarnings("deprecation")
 		@Override
 		public void run() {
 			try {
@@ -86,15 +91,21 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			Location loc = p1.getLocation();
+			loc1 = p1.getLocation();
+			loc2 = p2.getLocation();
 			PlayerInventory Inv1 = p1.getInventory();
 			int food = p1.getFoodLevel();
+			float exhaustion = p1.getExhaustion();
+			float saturation = p1.getSaturation();
+			int exp = p1.getTotalExperience();
 			
 			Collection<PotionEffect> effects1 = p1.getActivePotionEffects();
 			Collection<PotionEffect> effects2 = p2.getActivePotionEffects();
-			
-			p1.teleport(p2);
-			p2.teleport(loc);
+			////////////////////////////////////////////////////////////////////////////////////////
+			//TODO: saveData() and loadData()
+			////////////////////////////////////////////////////////////////////////////////////////
+			p1.teleport(loc2);
+			p2.teleport(loc1);
 			
 			p1.getInventory().setContents(p2.getInventory().getContents());
 			p2.getInventory().setContents(Inv1.getContents());
@@ -104,6 +115,15 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 			
 			p1.setFoodLevel(p2.getFoodLevel());
 			p2.setFoodLevel(food);
+			
+			p1.setExhaustion(p2.getExhaustion());
+			p2.setExhaustion(exhaustion);
+			
+			p1.setSaturation(p2.getSaturation());
+			p2.setSaturation(saturation);
+			
+			p1.setTotalExperience(p2.getTotalExperience());
+			p2.setTotalExperience(exp);
 			
 			for(PotionEffect effect : effects1) {
 				p1.removePotionEffect(effect.getType());
@@ -116,7 +136,6 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 			p1.addPotionEffects(effects2);
 			p2.addPotionEffects(effects1);
 			
-			
 			Date date = new Date();
 			//date.setTime(date.getTime()+(1000*60*4+1000*30)+(new Random().nextInt(40)+1)*1000);
 			date.setTime(date.getTime()+(1000*60*4+50*1000));
@@ -126,6 +145,7 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 		}
 	};
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(command.getName().equalsIgnoreCase("start") && !started) {
@@ -134,17 +154,19 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 			date.setTime(date.getTime()+(1000*60*4+50*1000));
 			timer.schedule(task, date);
 			
+			Bukkit.getWorld("world").setGameRuleValue("doImmediateRespawn", "true");
+			
 			p1.setHealth(0.0d);
 			p2.setHealth(0.0d);
-			
-			p1.teleport(loc1);
-			p2.teleport(loc2);
 			
 			p1.setInvulnerable(true);
 			p2.setInvulnerable(true);
 			
+			p1.teleport(loc1);
+			p2.teleport(loc2);
+			
 			try {
-				Thread.currentThread().sleep(6000);
+				Thread.currentThread().sleep(5000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
