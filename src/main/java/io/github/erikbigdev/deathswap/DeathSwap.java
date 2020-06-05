@@ -1,5 +1,6 @@
 package io.github.erikbigdev.deathswap;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Random;
 import java.util.Timer;
@@ -18,14 +19,16 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public final class DeathSwap extends JavaPlugin implements Listener{
 	
 	Player p1;
 	Player p2;
 	
-	Location loc1 = new Location(Bukkit.getWorld("world"), 20000, 170, 20000);
-	Location loc2 = new Location(Bukkit.getWorld("world"), -20000, 170, -20000);
+	Location loc1 = new Location(Bukkit.getWorld("world"), 20000, 170, 20000, p1.getLocation().getYaw() ,p1.getLocation().getPitch());
+	Location loc2 = new Location(Bukkit.getWorld("world"), -20000, 170, -20000, p2.getLocation().getYaw() ,p2.getLocation().getPitch());
 	
 	boolean started = false;
 
@@ -84,9 +87,35 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 				e.printStackTrace();
 			}
 			Location loc = p1.getLocation();
+			PlayerInventory Inv1 = p1.getInventory();
+			int food = p1.getFoodLevel();
+			
+			Collection<PotionEffect> effects1 = p1.getActivePotionEffects();
+			Collection<PotionEffect> effects2 = p2.getActivePotionEffects();
 			
 			p1.teleport(p2);
 			p2.teleport(loc);
+			
+			p1.getInventory().setContents(p2.getInventory().getContents());
+			p2.getInventory().setContents(Inv1.getContents());
+			
+			p1.updateInventory();
+			p2.updateInventory();
+			
+			p1.setFoodLevel(p2.getFoodLevel());
+			p2.setFoodLevel(food);
+			
+			for(PotionEffect effect : effects1) {
+				p1.removePotionEffect(effect.getType());
+			}
+			
+			for(PotionEffect effect : effects2) {
+				p2.removePotionEffect(effect.getType());
+			}
+			
+			p1.addPotionEffects(effects2);
+			p2.addPotionEffects(effects1);
+			
 			
 			Date date = new Date();
 			//date.setTime(date.getTime()+(1000*60*4+1000*30)+(new Random().nextInt(40)+1)*1000);

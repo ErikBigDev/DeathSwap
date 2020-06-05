@@ -1,9 +1,7 @@
-name: DeathSwap
+name: SoulSwap
 main: io.github.erikbigdev.deathswap.DeathSwap
 version: {$VersionNumber}
 commands:
    start:
       description: Starts the game
       usage: /start
-   test:
-      usage: bruh
