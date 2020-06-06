@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -46,12 +47,12 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 	public void onDeath(PlayerDeathEvent event) {
 		if(started) {
 			if(p1 != event.getEntity()) {
-				p1.sendTitle("§6§l"+p1.getPlayerListName()+" WON!", "§bGG", 10, 90, 20);
-				p2.sendTitle("§6§l"+p1.getPlayerListName()+" WON!", "§bGG", 10, 90, 20);
+				p1.sendTitle("ï¿½6ï¿½l"+p1.getPlayerListName()+" WON!", "ï¿½bGG", 10, 90, 20);
+				p2.sendTitle("ï¿½6ï¿½l"+p1.getPlayerListName()+" WON!", "ï¿½bGG", 10, 90, 20);
 			}
 			else {
-				p1.sendTitle("§6§l"+p2.getPlayerListName()+" WON!", "§bGG", 10, 90, 20);
-				p2.sendTitle("§6§l"+p2.getPlayerListName()+" WON!", "§bGG", 10, 90, 20);
+				p1.sendTitle("ï¿½6ï¿½l"+p2.getPlayerListName()+" WON!", "ï¿½bGG", 10, 90, 20);
+				p2.sendTitle("ï¿½6ï¿½l"+p2.getPlayerListName()+" WON!", "ï¿½bGG", 10, 90, 20);
 			}
 			started = false;
 			timer.cancel();
@@ -67,27 +68,27 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 		@Override
 		public void run() {
 			try {
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 10");
+				Bukkit.getServer().broadcastMessage("ï¿½4ï¿½lSWAPPING IN 10");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 9");
+				Bukkit.getServer().broadcastMessage("ï¿½4ï¿½lSWAPPING IN 9");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 8");
+				Bukkit.getServer().broadcastMessage("ï¿½4ï¿½lSWAPPING IN 8");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 7");
+				Bukkit.getServer().broadcastMessage("ï¿½4ï¿½lSWAPPING IN 7");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 6");
+				Bukkit.getServer().broadcastMessage("ï¿½4ï¿½lSWAPPING IN 6");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 5");
+				Bukkit.getServer().broadcastMessage("ï¿½4ï¿½lSWAPPING IN 5");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 4");
+				Bukkit.getServer().broadcastMessage("ï¿½4ï¿½lSWAPPING IN 4");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 3");
+				Bukkit.getServer().broadcastMessage("ï¿½4ï¿½lSWAPPING IN 3");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 2");
+				Bukkit.getServer().broadcastMessage("ï¿½4ï¿½lSWAPPING IN 2");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN 1");
+				Bukkit.getServer().broadcastMessage("ï¿½4ï¿½lSWAPPING IN 1");
 				Thread.currentThread().sleep(1000);
-				Bukkit.getServer().broadcastMessage("§4§oSWAP!");
+				Bukkit.getServer().broadcastMessage("ï¿½4ï¿½oSWAP!");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -135,6 +136,26 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 			
 			p1.addPotionEffects(effects2);
 			p2.addPotionEffects(effects1);
+			
+			Entity vehicle1 = null;
+			Entity vehicle2 = null;
+			
+			if(p1.isInsideVehicle()) {
+				vehicle1 = p1.getVehicle();
+				p1.leaveVehicle();
+			}
+
+			if(p2.isInsideVehicle()) {
+				vehicle2 = p2.getVehicle();
+				p2.leaveVehicle();
+			}
+			
+			if(vehicle1 != null)
+				vehicle1.addPassenger(p2);
+			
+			if(vehicle2 != null)
+				vehicle2.addPassenger(p1);
+			
 			
 			Date date = new Date();
 			//date.setTime(date.getTime()+(1000*60*4+1000*30)+(new Random().nextInt(40)+1)*1000);
