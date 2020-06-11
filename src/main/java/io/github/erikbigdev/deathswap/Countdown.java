@@ -22,12 +22,12 @@ public class Countdown extends BukkitRunnable {
 	@Override
 	public void run() {
 		if(i > 0) {
-			Bukkit.getServer().broadcastMessage("§4§lSWAPPING IN " + i);
+			Bukkit.getServer().broadcastMessage("ï¿½4ï¿½lSWAPPING IN " + i);
 			i--;
 			return;
 		}
 		else if(i <= 0){
-			Bukkit.getServer().broadcastMessage("§4§oSWAP!");
+			Bukkit.getServer().broadcastMessage("ï¿½4ï¿½oSWAP!");
 			Location loc1 = ds.p1.getLocation();
 			Location loc2 = ds.p2.getLocation();
 			
@@ -88,8 +88,8 @@ public class Countdown extends BukkitRunnable {
 			if(vehicle2 != null)
 				vehicle2.addPassenger(ds.p1);
 			
-			ds.p1.teleport(ds.loc2);
-			ds.p2.teleport(ds.loc1);
+			ds.p1.teleport(loc2);
+			ds.p2.teleport(loc1);
 
 			ds.task.cancel();
 			
