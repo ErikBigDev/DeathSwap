@@ -29,8 +29,8 @@ public class Countdown extends BukkitRunnable {
 			loc1 = ds.p1.getLocation();
 			loc2 = ds.p2.getLocation();
 
-			ds.p1.teleport(ds.loc2);
-			ds.p2.teleport(ds.loc1);
+			ds.p1.teleport(loc2);
+			ds.p2.teleport(loc1);
 
 			ds.task.cancel();
 			
