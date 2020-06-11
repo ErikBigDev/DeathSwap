@@ -96,6 +96,10 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 			task.runTaskLater(this, 20*60*4+50*40);
 			
 			Bukkit.getWorld("world").setGameRuleValue("doImmediateRespawn", "true");
+			Bukkit.getWorld("world").setTime(0);
+
+			p1.getInventory().clear();
+			p2.getInventory().clear();
 			
 			p1.setStatistic(Statistic.TIME_SINCE_REST, 0);
 			p1.setStatistic(Statistic.TIME_SINCE_REST, 0);
@@ -108,6 +112,9 @@ public final class DeathSwap extends JavaPlugin implements Listener{
 			
 			p1.setExhaustion(0.0f);
 			p2.setExhaustion(0.0f);
+			
+			p1.setFoodLevel(20);
+			p2.setFoodLevel(20);
 			
 			p1.setInvulnerable(true);
 			p2.setInvulnerable(true);
